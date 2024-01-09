@@ -24,5 +24,5 @@ public class User {
   @Column(name = "user_id", nullable = false)
   private Long userId;
 
-  private String accountName;
+  private String username;
 }
