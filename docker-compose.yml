@@ -1,0 +1,47 @@
+version: '3.7'
+services:
+  mariadb:
+    container_name: chatting_mariadb
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_DATABASE: chatting
+      MARIADB_USER: chatting
+      MARIADB_PASSWORD: a1234
+      MARIADB_ROOT_PASSWORD: a1234
+    networks:
+      - backend
+    restart: always
+
+  redis:
+    image: redis
+    container_name: chatting_redis
+    command: redis-server --port 6379
+    hostname: redis
+    ports:
+      - 6379:6379
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: chatting_rabbitmq-stream
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "RabbitMQ-My-Cookies"
+      RABBITMQ_DEFAULT_USER: "rootuser"
+      RABBITMQ_DEFAULT_PASS: "rootpass"
+    restart: always
+    command: >
+      sh -c 'rabbitmq-plugins enable --offline rabbitmq_stomp rabbitmq_web_stomp && rabbitmq-server'
+
+volumes:
+  data: { }
+
+networks:
+  backend:
+    name: backend
+    driver: bridge
